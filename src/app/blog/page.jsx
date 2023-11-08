@@ -3,14 +3,29 @@ import styles from './page.module.css';
 import Link from 'next/link';
 import Image from 'next/image';
 
+async function getData(){
+  const res = await fetch('http://localhost:3000/api/posts', {cache: "no-store"});
 
-const Blog = () => {
+  if(!res.ok){
+    throw new Error('Failed to fetch data');
+  }
+
+  return res.json();
+}
+
+
+const Blog = async () => {
+
+  const data = await getData();
+
   return (
     <div className={styles.mainContainer}>
-      <Link href="/blog/testId" className={styles.container}>
+      {
+      data.map((item) => (
+        <Link href={`/blog/${item._id}`} className={styles.container} key={item.id}>
         <div className={styles.imageContainer}>
           <Image
-            src="https://images.pexels.com/photos/2103127/pexels-photo-2103127.jpeg"
+            src={item.img}
             alt=''
             width={400}
             height={250}
@@ -18,40 +33,12 @@ const Blog = () => {
           />
         </div>
         <div className={styles.content}>
-          <h1 className={styles.title}>Test</h1>
-          <p className={styles.desc}>Desc</p>
+          <h1 className={styles.title}>{item.title}</h1>
+          <p className={styles.desc}>{item.desc}</p>
         </div>
       </Link>
-      <Link href="/blog/testId" className={styles.container}>
-        <div className={styles.imageContainer}>
-          <Image
-            src="https://images.pexels.com/photos/2103127/pexels-photo-2103127.jpeg"
-            alt=''
-            width={400}
-            height={250}
-            className={styles.image}
-          />
-        </div>
-        <div className={styles.content}>
-          <h1 className={styles.title}>Test</h1>
-          <p className={styles.desc}>Desc</p>
-        </div>
-      </Link>
-      <Link href="/blog/testId" className={styles.container}>
-        <div className={styles.imageContainer}>
-          <Image
-            src="https://images.pexels.com/photos/2103127/pexels-photo-2103127.jpeg"
-            alt=''
-            width={400}
-            height={250}
-            className={styles.image}
-          />
-        </div>
-        <div className={styles.content}>
-          <h1 className={styles.title}>Test</h1>
-          <p className={styles.desc}>Desc</p>
-        </div>
-      </Link>
+      ))
+      }
     </div>
   )
 }
